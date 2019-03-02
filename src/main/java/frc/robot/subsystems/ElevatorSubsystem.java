@@ -15,7 +15,7 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 
-public class ElevatorSubsystem extends Subsystem {
+public class ElevatorSubsystem extends Subsystem { 
 	public LimitSwitch limitSwitchesAtBottomOfElevatorOne = new LimitSwitch(RobotMap.ELEVATOR1_BOTTOM_ID);
 	//limitSwitchesAtZero is the bottom of ele 1
 	public LimitSwitch limitSwitchAtBottomOfElevatorTwo = new LimitSwitch(RobotMap.ELEVATOR2_BOTTOM_ID);
