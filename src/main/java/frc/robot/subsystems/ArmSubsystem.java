@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -20,12 +21,12 @@ public class ArmSubsystem extends Subsystem {
 
     private ArmSubsystem() {
         System.out.println("CREATED ARM SUBSYSTEM");
-        //createArmwheel();
+        createArmwheel();
         createArmopenclose();
 	}
-    // public LimitSwitch limitSwitchesForArms = new LimitSwitch(RobotMap.ARM_OPEN_ID);
+   public LimitSwitch limitSwitchForArmOpen = new LimitSwitch(RobotMap.ARM_OPEN_ID);
     public CANEncoder encoderArm;
-    public double maxValueInches = 18;
+    public double maxValueInches = 7;
     public double encoderOffsetOfArm;
     public CANPIDController pidControllerArmOpenClose;
 
@@ -48,14 +49,12 @@ public class ArmSubsystem extends Subsystem {
 
     private void createArmopenclose() {
 		try {
-            Robot.oi.armopenclose= new CANSparkMax(RobotMap.ARM_OPEN_CLOSE_TAL_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-            Robot.oi.armopenclose.setIdleMode(IdleMode.kBrake);
-            Robot.oi.armopenclose.setSmartCurrentLimit(8);
-            pidControllerArmOpenClose=Robot.oi.armopenclose.getPIDController();
-            
-            // Robot.oi.armopenclose = new WPI_TalonSRX(RobotMap.ARM_OPEN_CLOSE_TAL_ID);
-			//Robot.oi.armopenclose.configPeakOutputForward(1,0); 
-			//Robot.oi.armopenclose.configPeakOutputReverse(-1,0);
+          Robot.oi.armopenclose= new CANSparkMax(RobotMap.ARM_OPEN_CLOSE_TAL_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+          Robot.oi.armopenclose.setIdleMode(IdleMode.kBrake);
+          Robot.oi.armopenclose.setSmartCurrentLimit(30);
+          encoderArm = Robot.oi.armopenclose.getEncoder();
+          encoderArm.setPositionConversionFactor(4.63/1.0); //Small gear on motor, big gear on arm
+          pidControllerArmOpenClose = Robot.oi.armopenclose.getPIDController();
 		} catch (Exception ex) {
 			System.out.println("createArmopenclose FAILED");
 		}
@@ -74,21 +73,25 @@ public class ArmSubsystem extends Subsystem {
 
     public void armsOpen(){
         // System.out.println("amrsOpen is"+Robot.arm.limitSwitchesForArms.read());
-        //  if (Robot.arm.limitSwitchesForArms.read() ==false) {
+        if (Robot.arm.limitSwitchForArmOpen.read() == false) {
             Robot.oi.armopenclose.setIdleMode(IdleMode.kCoast); 
             Robot.oi.armopenclose.set(-1);
-         }
-    // }
+        }
+    }
 
     public void armsClose(){
-        System.out.println("encoderOffsetOfArm"+encoderOffsetOfArm);
-        double maxEncoderValue = RobotUtils.getEncPositionFromINArms(maxValueInches);
-        System.out.println("maxEncoderValueArms"+maxEncoderValue);
-        // if ((Robot.arm.encoderArm.getPosition()+ encoderOffsetOfArm)< maxEncoderValue ){
+        // System.out.println("encoderOffsetOfArm "+encoderOffsetOfArm);
+        // System.out.println("maxValueInches " + maxValueInches);
+       if ((Robot.arm.encoderArm.getPosition() - encoderOffsetOfArm)< maxValueInches){
             Robot.oi.armopenclose.setIdleMode(IdleMode.kCoast); 
             Robot.oi.armopenclose.set(1);
-        //  }
-    }
+        }
+        else 
+        {
+            armsStop();
+        }
+   }
+
     public void armsStop(){
         Robot.oi.armopenclose.setIdleMode(IdleMode.kBrake); 
         Robot.oi.armopenclose.set(0);

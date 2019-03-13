@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,12 +34,14 @@ public class Robot extends TimedRobot {
   // private static final String kCustomAuto = "My Auto";
   // private String m_autoSelected;
   // public static final DebugLogger myLogger = new DebugLogger();
-   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  // private final SendableChooser<String> m_chooser = new SendableChooser<>();
    public static ElevatorSubsystem elevator = null;
    public static DriveSubsystem drive = null;
    public static ArmSubsystem arm = null;
    public static LiftandrampSubsystem liftandramp = null;
-
+   public Command homingElevatorCommand = null;
+  //  public Command homingArmCommand = null;
+  
 
   /**
    * This function is run when the robot is first started up and should be
@@ -46,19 +49,30 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     // m_chooser.addOption("My Auto", kCustomAuto);
+    
     // SmartDashboard.putData("Auto choices", m_chooser);
 
     drive = DriveSubsystem.getInstance();         
-		//liftandramp = LiftandrampSubsystem.getInstance();
+		liftandramp = LiftandrampSubsystem.getInstance();
 		arm = ArmSubsystem.getInstance();               
 		elevator = ElevatorSubsystem.getInstance();
-
+    homingElevatorCommand = new HomingElevatorCommand();
+    // homingArmCommand = new ArmHomingCommand();
     // oi.gyro = new ADXRS450_Gyro();
   }
 
-  public void teleopInit() {
+//   /**
+//  * @return the m_chooser
+//  */
+// public SendableChooser<String> getM_chooser() { //recomend fix of the sender error
+// 	return m_chooser;
+// }
+
+public void teleopInit() {
+  homingElevatorCommand.cancel();
+  // homingArmCommand.cancel();
 		// oi.gyro.reset();
 		// SmartDashboard.putNumber("Gyro angle", oi.gyro.getAngle());
 	}
@@ -71,11 +85,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // m_autoSelected = m_chooser.getSelected();
     // System.out.println("Auto selected: " + m_autoSelected);
-    //  new HomingElevatorCommand().start();
+    homingElevatorCommand.start(); 
+    // homingArmCommand.start();
     // new DrivingCameraCommand().start();
-    // new ArmHomingCommand().start();
   }
-
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();

@@ -16,14 +16,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 
 public class ElevatorSubsystem extends Subsystem { 
-	public LimitSwitch limitSwitchesAtBottomOfElevatorOne = new LimitSwitch(RobotMap.ELEVATOR1_BOTTOM_ID);
-	//limitSwitchesAtZero is the bottom of ele 1
+	public LimitSwitch limitSwitchAtBottomOfElevatorOne = new LimitSwitch(RobotMap.ELEVATOR1_BOTTOM_ID);
 	public LimitSwitch limitSwitchAtBottomOfElevatorTwo = new LimitSwitch(RobotMap.ELEVATOR2_BOTTOM_ID);
-	//limitSwitchesAtOne is the bottom of ele 2
-	// LimitSwitches limitSwitchesAtTwo = new LimitSwitches(2);
-	// //limitSwitchesAtTwo is the top of ele 1
-	// LimitSwitches limitSwitchesAtThree = new LimitSwitches(3);
-	// //limitSwitchesAtThree is the top of ele 2
 	static private ElevatorSubsystem subsystem;
 	public double positionP = 0.08525; //25% power at 3000 error
 
@@ -31,8 +25,8 @@ public class ElevatorSubsystem extends Subsystem {
 	public CANEncoder encoderTwo;
 	public CANPIDController pidControllerElevatorOne;
 	public CANPIDController pidControllerElevatorTwo;
-	public double maxHeightOfElevator1 = 40.25;
-	public double maxHeightOfElevator2 = 42.75;
+	public double maxHeightOfElevator1 = 33;
+	public double maxHeightOfElevator2 = 34;
 	public double encoderOffsetOfElevatorOne;
 	public double encoderOffsetOfElevatorTwo;
 	
@@ -52,9 +46,10 @@ public class ElevatorSubsystem extends Subsystem {
 	private void createElevator() {
 		try {
 			Robot.oi.elevator1 = new CANSparkMax(RobotMap.ELEVATOR_TAL_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-			// Robot.oi.elevator1.setIdleMode(IdleMode.kBrake); //if motor not moving
-			Robot.oi.elevator1.setSmartCurrentLimit(8);
+			Robot.oi.elevator1.setIdleMode(IdleMode.kBrake); //if motor not moving
+			Robot.oi.elevator1.setSmartCurrentLimit(40);
 			encoderOne = Robot.oi.elevator1.getEncoder();
+			encoderOne.setPositionConversionFactor(1.0/1.57); //Small gear on motor, big gear on elevator
 			pidControllerElevatorOne=Robot.oi.elevator1.getPIDController();
 		} catch (Exception ex) {
 			System.out.println("createElevator FAILED");
@@ -64,10 +59,11 @@ public class ElevatorSubsystem extends Subsystem {
 	private void createElevator2() {
 		try {
 			Robot.oi.elevator2 = new CANSparkMax(RobotMap.ELEVATOR2_TAL_ID,CANSparkMaxLowLevel.MotorType.kBrushless);
-			// Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
+			Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
 			Robot.oi.elevator2.setInverted(true);
-			Robot.oi.elevator2.setSmartCurrentLimit(8);
+			Robot.oi.elevator2.setSmartCurrentLimit(40);
 			encoderTwo = Robot.oi.elevator2.getEncoder();
+			encoderTwo.setPositionConversionFactor(1.0/2.0); //Small gear on motor, big gear on elevator
 			pidControllerElevatorTwo=Robot.oi.elevator2.getPIDController();
 		} catch (Exception ex) {
 			System.out.println("createElevator2 FAILED");
@@ -75,43 +71,64 @@ public class ElevatorSubsystem extends Subsystem {
 	}
 
 	public void moveUpOrDown(double num){
-		double range = 0.3;
+		double range = 0.1;
+		System.out.println("num " + num);
 		if(num>range){//we want to move up
-			if (checkMaxOfElevatorTwo() == false){//if elevator one is not all the way at thr bottom
-			
-				// SmartDashboard.putNumber("EncoderTwoPosition", Robot.elevator.encoderTwo);
+			System.out.println("num is greater then range" );
+			if(checkMaxOfElevatorTwo() == false){//if elevator one is not all the way at the bottom
+				System.out.println("Elevator two is not all the way up" );
+
 				if(checkMaxOfElevatorOne()==true){//if elevator two is all the way at the bottom
-					Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
+					System.out.println("elevator one is all the way up" );
+
+					Robot.elevator.move1(0);
 					Robot.elevator.move2(num);//move elevator two up
 				}
-				// SmartDashboard.putNumber("EncoderTwoPosition", Robot.elevator.encoderTwo);
-				else{// if elevator One is all the way down
-					Robot.oi.elevator1.setIdleMode(IdleMode.kCoast);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
+				else
+				{ //if elevator One is all the way down
+					System.out.println("elevator one is not all the way up" );
+
 					Robot.elevator.move1(num);//move elevator two up
+					Robot.elevator.move2(0);
 				}
-				// SmartDashboard.putNumber("EncoderOnePosition", Robot.elevator.encoderOne);
+			}
+			else
+			{
+				System.out.println("everyone is all the way up" );
+
+				Robot.elevator.move1(0);
+				Robot.elevator.move2(0);
 			}
 		}
-		else if(num<range){ //going down// + is down
-			if (limitSwitchesAtBottomOfElevatorOne.read() == false){
+		else if(num<-range){ //going down// + is down
+			System.out.println("num is less then range");
+			if (limitSwitchAtBottomOfElevatorOne.read() == false){
+				System.out.println("elevator one is not all the way down" );
+
 				if (limitSwitchAtBottomOfElevatorTwo.read() == true) {
-					Robot.oi.elevator1.setIdleMode(IdleMode.kCoast);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
+					System.out.println("elevator two is all the way down" );
+
 					Robot.elevator.move1(num);
+					Robot.elevator.move2(0);
 				}
-				else{
-					Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
+		 		else{
+					System.out.println("elevator two is not all the way down" );
+
+					Robot.elevator.move1(0);
 					Robot.elevator.move2(num);
-				}
+		 		}
+			 }
+			else
+			{
+				System.out.println("everyone is all the way down" );
+
+				Robot.elevator.move1(0);
+				Robot.elevator.move2(0);
 			}
 		}
 		else{
-			Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
+			System.out.println("num is set to zero");
 			Robot.elevator.move1(0);
-			Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
 			Robot.elevator.move2(0);
 		}
 	}
@@ -143,52 +160,51 @@ public class ElevatorSubsystem extends Subsystem {
 	public void movePosition(double desiredHeight){
 		//desiredHeight is in Inches, while desiredEncoderPosition is in encoder counts, real
 		//desiredEncoderPosition should be used when doing the math below, real, where we want to locate
-		double desiredEncoderPostionOfElevatorOne = RobotUtils.getEncPositionFromINElevatorOne(desiredHeight-(RobotUtils.getHeightOfRobotFromTheGround() ));	
-		double desiredEncoderPostionOfElevatorTwo = RobotUtils.getEncPositionFromINElevatorTwo(desiredHeight-(RobotUtils.getHeightOfRobotFromTheGround() ));	
-		double currentHeight = RobotUtils.getDistanceInInchesFromElevatorOne(encoderOne.getPosition()-encoderOffsetOfElevatorOne)+RobotUtils.getDistanceInInchesFromElevatorTwo(encoderTwo.getPosition()-encoderOffsetOfElevatorTwo);
+		desiredHeight = Math.max(RobotUtils.getHeightOfRobotFromTheGround(), desiredHeight);
+		double elevatorDesiredHeight = desiredHeight-RobotUtils.getHeightOfRobotFromTheGround();
+		// double PostionOfElevatorTwo = (desiredHeight-(RobotUtils.getHeightOfRobotFromTheGround() ));	
+		double currentHeight = (currentHeightElevatorOne())+(currentHeightElevatorTwo());
 		 double rangeForCurrentHeight = 1;
-		if((currentHeight<=(rangeForCurrentHeight+currentHeight))&&(currentHeight >= (rangeForCurrentHeight- currentHeight))){
+		if((currentHeight<=(rangeForCurrentHeight+currentHeight))
+		   &&(currentHeight >= (rangeForCurrentHeight- currentHeight))){
 			Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
 			Robot.oi.elevator1.stopMotor();
-			// add in a breack
 			Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
 			Robot.oi.elevator2.stopMotor();
-			//add in breack
 		}
 		else
 		{
-			if (currentHeight>desiredHeight){
+			if (currentHeight>elevatorDesiredHeight){
 				if (limitSwitchAtBottomOfElevatorTwo.read()==true){
 					
 					Robot.oi.elevator1.setIdleMode(IdleMode.kCoast);
 					Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
-				
-					pidControllerElevatorOne.setReference(desiredEncoderPostionOfElevatorOne-RobotUtils.getEncPositionFromINElevatorOne(currentHeight)+Robot.elevator.encoderOffsetOfElevatorOne, ControlType.kPosition);
+					pidControllerElevatorOne.setReference(elevatorDesiredHeight + encoderOffsetOfElevatorOne, ControlType.kPosition);
 				}
 				else{
-					Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
+				 	Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
+				 	Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
 			
-					double desiredHeightOfElevatorTwo = (desiredEncoderPostionOfElevatorTwo-(encoderOne.getPosition()-encoderOffsetOfElevatorOne));
-					if (desiredHeightOfElevatorTwo > 0){
+				 	double desiredHeightOfElevatorTwo = (elevatorDesiredHeight-(currentHeightElevatorOne()));
+				 	if (desiredHeightOfElevatorTwo > 0){
 						
-						pidControllerElevatorTwo.setReference(-1*desiredHeightOfElevatorTwo + Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);// must be * -1
-					}
-					else{
-						pidControllerElevatorTwo.setReference(Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);//to 0
-					}
+				 		pidControllerElevatorTwo.setReference(-1*desiredHeightOfElevatorTwo + Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);// must be * -1
+				 	}
+				 	else{
+				 		pidControllerElevatorTwo.setReference(Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);//to 0
+				 	}
 				}
 			}
-			else if (currentHeight<desiredHeight) {
-				if (checkMaxOfElevatorOne()==true) {//when ele 1 is all the way up
-					Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
-					Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
+			// else if (currentHeight<desiredHeight) {
+			// 	if (checkMaxOfElevatorOne()==true) {//when ele 1 is all the way up
+			// 		Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
+			// 		Robot.oi.elevator2.setIdleMode(IdleMode.kCoast);
 
-					pidControllerElevatorTwo.setReference(desiredEncoderPostionOfElevatorTwo-RobotUtils.getEncPositionFromINElevatorTwo(currentHeight) + Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);
-				}
+			// 		pidControllerElevatorTwo.setReference(desiredEncoderPostionOfElevatorTwo-RobotUtils.getEncPositionFromINElevatorTwo(currentHeight) + Robot.elevator.encoderOffsetOfElevatorTwo, ControlType.kPosition);
+			// 	}
 				else {
-					double desiredHeightOfElevatorOne = (desiredEncoderPostionOfElevatorOne-(encoderTwo.getPosition()-encoderOffsetOfElevatorTwo));
-					double maxEncoderElevator1 = RobotUtils.getEncPositionFromINElevatorOne(maxHeightOfElevator1)-encoderOffsetOfElevatorOne;//add max encoder hieght of elevator one
+					double desiredHeightOfElevatorOne = (elevatorDesiredHeight-(encoderTwo.getPosition()-encoderOffsetOfElevatorTwo));
+					double maxEncoderElevator1 = (maxHeightOfElevator1)-encoderOffsetOfElevatorOne;//add max encoder hieght of elevator one
 					Robot.oi.elevator1.setIdleMode(IdleMode.kCoast);
 					Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
 					if (desiredHeightOfElevatorOne < maxEncoderElevator1){
@@ -201,45 +217,62 @@ public class ElevatorSubsystem extends Subsystem {
 			}
 			//else it is equal!
 		}		
-	}
+//	}
 
 	public boolean checkMaxOfElevatorOne()
 	{
-		double currentHeightOfOne = encoderOne.getPosition();
-		double maxEncoderElevator1 = RobotUtils.getEncPositionFromINElevatorOne(maxHeightOfElevator1);//add max encoder hieght of elevator one
-		double wiggelRoomInEncoderValuesForTheHeightOfOne = 10;
-		System.out.println("current Height Of One "+currentHeightOfOne);
-		System.out.println("maxEncoderElevator1"+maxEncoderElevator1);
-		System.out.println("wiggelRoomInEncoderVaulesForTheHeightOfOne" + wiggelRoomInEncoderValuesForTheHeightOfOne);
-		if((currentHeightOfOne <= (maxEncoderElevator1 + wiggelRoomInEncoderValuesForTheHeightOfOne ))&&(currentHeightOfOne >= (maxEncoderElevator1 - wiggelRoomInEncoderValuesForTheHeightOfOne))){
-			System.out.println("currentHeightOfOne is true"+true);
+		double currentHeightOfOne = currentHeightElevatorOne();
+		double maxHeightOfElevator1 = maxHeightElevatorOne();
+		double wiggleRoomForTheHeightOfOne = 0.5;
+		System.out.println("current Height Of One " + currentHeightOfOne);
+		System.out.println("maxHeightOfElevator1 " + maxHeightOfElevator1);
+		System.out.println("wiggleRoomForTheHeightOfOne " + wiggleRoomForTheHeightOfOne);
+		if(currentHeightOfOne >= (maxHeightOfElevator1 - wiggleRoomForTheHeightOfOne)){
+			System.out.println("currentHeightOfOne is " + true);
 			return true;
 		}
 		else{
-			System.out.println("currentHeightOfOne is true"+false);
+			System.out.println("currentHeightOfOne is " + false);
 			return false;
 		}
 
 	}
 	public boolean checkMaxOfElevatorTwo()
 	{
-		
-		double currentHeightOfTwo = encoderTwo.getPosition();
-		double maxEncoderElevator2 = RobotUtils.getEncPositionFromINElevatorTwo(maxHeightOfElevator2);//add max encoder hieght of elevator one
-		double wiggelRoomInEncoderValuesForTheHeightOfTwo = 10;
-		System.out.println("current Height Of Two "+currentHeightOfTwo);
-		System.out.println("maxEncoderElevator2"+maxEncoderElevator2);
-		System.out.println("wiggelRoomInEncoderVaulesForTheHeightOfTwo" + wiggelRoomInEncoderValuesForTheHeightOfTwo);
-		if((currentHeightOfTwo<= (maxEncoderElevator2 + wiggelRoomInEncoderValuesForTheHeightOfTwo ))&&(currentHeightOfTwo >= (maxEncoderElevator2 - wiggelRoomInEncoderValuesForTheHeightOfTwo))){
-			System.out.println("currentHeightOfTwo is true"+true);
+		double currentHeightOfTwo = currentHeightElevatorTwo();
+		double maxHeightOfElevator2 = maxHeightElevatorTwo();
+		double wiggleRoomForTheHeightOfTwo = 0.5;
+		System.out.println("current Height Of Two " + currentHeightOfTwo);
+		System.out.println("maxEncoderElevator2 " + maxHeightOfElevator2);
+		System.out.println("wiggleRoomForTheHeightOfTwo " + wiggleRoomForTheHeightOfTwo);
+		if(currentHeightOfTwo >= (maxHeightOfElevator2 - wiggleRoomForTheHeightOfTwo)){
+			System.out.println("currentHeightOfTwo is " + true);
 			return true;
-
 		}
 		else{
-			System.out.println("currentHeightOfTwo is true"+false);
-
+			System.out.println("currentHeightOfTwo is " + false);
 			return false;
 		}
+	}
+
+	public double currentHeightElevatorOne()
+	{
+		return encoderOne.getPosition() - encoderOffsetOfElevatorOne;
+	}
+
+	public double currentHeightElevatorTwo()
+	{
+		return encoderTwo.getPosition() - encoderOffsetOfElevatorTwo;
+	}
+
+	public double maxHeightElevatorOne()
+	{
+		return maxHeightOfElevator1/*  + encoderOffsetOfElevatorOne */;
+	}
+
+	public double maxHeightElevatorTwo()
+	{
+		return maxHeightOfElevator2/*  + encoderOffsetOfElevatorTwo */;
 	}
 	
 	@Override

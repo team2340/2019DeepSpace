@@ -13,17 +13,18 @@ public class ArmHomingCommand extends Command {
 
 	@Override
 	protected void execute() {
-		Robot.arm.armMovement(true);
+		Robot.arm.armMovement(false);
 	}
 
 	@Override
 	protected boolean isFinished() {
-		// if (Robot.arm.limitSwitchesForArms.read() ==true )
+		if (Robot.arm.limitSwitchForArmOpen.read() == true)
 		{
-            // Robot.myLogger.log("Arm","HOMED",Robot.arm.encoderArm.getPosition());
-            Robot.arm.encoderOffsetOfArm = Robot.arm.encoderArm.getPosition();
+			Robot.arm.armsStop();
+			Robot.arm.encoderOffsetOfArm = Robot.arm.encoderArm.getPosition();
+			System.out.println("Arm offset: " + Robot.arm.encoderOffsetOfArm);
 			return true;
 		}
-		// return false;
+		return false;
 	}
 }

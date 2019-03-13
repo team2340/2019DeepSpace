@@ -16,9 +16,9 @@ public class LimitSwitch  {
     public boolean read() {
 		System.out.println("limitSwitch "+pinnumber+" "+limitSwitch.get());
 		
-    	while (limitSwitch.get()) {
-    		Timer.delay(.01);
-		}
+    	// while (limitSwitch.get()) {
+    	// 	Timer.delay(.01);
+		// }
 		return limitSwitch.get();
 	}
 }	

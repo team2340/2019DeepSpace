@@ -7,8 +7,8 @@ public class RobotUtils {
 	private static double heightOfRobotArms = 0;
 	private static double heightOfBox = 0;
 	private static double armRatio = 1;
-	private static double elevatorOneRatio = 1;
-	private static double elevatorTwoRatio=1.5;
+	private static double elevatorOneRatio = 1.5;
+	private static double elevatorTwoRatio=2;
 	private static double heightOfRobotFromTheGround = 3;
 	public static  double elevatorRev = 0.314961;
 

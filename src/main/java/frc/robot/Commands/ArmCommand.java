@@ -22,7 +22,19 @@ public class ArmCommand extends Command {
 
 	@Override
 	protected void execute() {
-		System.out.println("limit of arms");
+		System.out.println("arm limit switch " + Robot.arm.limitSwitchForArmOpen.read());
+		System.out.println("arm encoder position " + Robot.arm.encoderArm.getPosition());
+		System.out.println("arm encoder offset " + Robot.arm.encoderOffsetOfArm);
+		System.out.println("arm max height " + Robot.arm.maxValueInches);
+		// System.out.println("arm max height w/ offset " + Robot.arm.maxHeightElevatorTwo());
+		// System.out.println("limit of arms");
+		if (Robot.arm.limitSwitchForArmOpen.read() == true)
+		{
+			Robot.arm.armsStop();
+			Robot.arm.encoderOffsetOfArm = Robot.arm.encoderArm.getPosition();
+			System.out.println("Arm offset: " + Robot.arm.encoderOffsetOfArm);
+		}
+
         if(controller.getRawButton(RobotMap.BUTTON_4) && controller.getRawButton(RobotMap.BUTTON_7))
         {
             Robot.arm.armsClose();
@@ -33,16 +45,16 @@ public class ArmCommand extends Command {
 		else{
 			Robot.arm.armsStop();
 		}
-        
-        // if(controller.getRawButton(RobotMap.BUTTON_1)&& controller.getRawButton(RobotMap.BUTTON_7)){
-        //     Robot.arm.armWheelsin();
-        // }
-        // else if(controller.getRawButton(RobotMap.BUTTON_1)&& !controller.getRawButton(RobotMap.BUTTON_7)){
-        //     Robot.arm.armWheelsout();
-		// }
-		// else{
-		// 	Robot.arm.armWheelStop();
-		// }
+        if (controller.getRawButton(RobotMap.BUTTON_5) && !controller.getRawButton(RobotMap.BUTTON_7)){
+			Robot.arm.armWheelsin();
+		}
+
+        else if(controller.getRawButton(RobotMap.BUTTON_1)&& !controller.getRawButton(RobotMap.BUTTON_7)){
+            Robot.arm.armWheelsout();
+		}
+		else{
+			Robot.arm.armWheelStop();
+		}
     }
 	@Override
 	protected boolean isFinished() {

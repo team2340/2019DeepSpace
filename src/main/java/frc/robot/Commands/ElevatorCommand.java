@@ -19,25 +19,39 @@ public class ElevatorCommand extends Command {
 
 	@Override
 	protected void execute() {
-		// System.out.println("limit switch at bottom of elevator two"+Robot.elevator.limitSwitchAtBottomOfElevatorTwo.read());
-		// System.out.println("limit switch at bottom of elevator one"+Robot.elevator.limitSwitchesAtBottomOfElevatorOne.read());
-	
+		double limit = 0.6;
+		System.out.println("limit switch at bottom of elevator one " + Robot.elevator.limitSwitchAtBottomOfElevatorOne.read());
+		System.out.println("encoder one position " + Robot.elevator.encoderOne.getPosition());
+		System.out.println("encoder one position w/ offset " + Robot.elevator.currentHeightElevatorOne());
+		System.out.println("elevator one max height " + Robot.elevator.maxHeightOfElevator1);
+		System.out.println("elevator one max height w/ offset " + Robot.elevator.maxHeightElevatorOne());
+
+		System.out.println("limit switch at bottom of elevator two " + Robot.elevator.limitSwitchAtBottomOfElevatorTwo.read());
+		System.out.println("encoder two position " + Robot.elevator.encoderTwo.getPosition());
+		System.out.println("encoder two position w/ offset " + Robot.elevator.currentHeightElevatorTwo());
+		System.out.println("elevator two max height " + Robot.elevator.maxHeightOfElevator2);
+		System.out.println("elevator two max height w/ offset " + Robot.elevator.maxHeightElevatorTwo());
+
 		double y = -controller.getY();
+		y = Math.min(y, limit);
+		y = Math.max(y, -limit);
+
 		//going up or down	
 		Robot.elevator.moveUpOrDown(y);
 		//deliver cargo
 		//If you don't press Button_7, you are doing the ball;
 		//If you press Button_7, you are switched to do the hatch.
+		if (y==0){
 		if(controller.getRawButton(RobotMap.BUTTON_2) && !controller.getRawButton(RobotMap.BUTTON_7)){
 			Robot.elevator.movePosition(27.5);
 		}
 		if (controller.getRawButton(RobotMap.BUTTON_3) && !controller.getRawButton(RobotMap.BUTTON_7)){
 			Robot.elevator.movePosition(55.5);
 		}
-		if (controller.getRawButton(RobotMap.BUTTON_5) && !controller.getRawButton(RobotMap.BUTTON_7)){
-			Robot.elevator.movePosition(83.5);
-		}
-
+		
+		if(controller.getRawButton(RobotMap.BUTTON_1)&& controller.getRawButton(RobotMap.BUTTON_7)){
+            Robot.elevator.movePosition(83.5);
+        }
 		//If you also press Button_7, you are switched to do the hatch.
 		if (controller.getRawButton(RobotMap.BUTTON_2) && controller.getRawButton(RobotMap.BUTTON_7)){
 			Robot.elevator.movePosition(19);
@@ -54,6 +68,7 @@ public class ElevatorCommand extends Command {
 			Robot.elevator.movePosition(38.5);
 		}
 	}
+}
 	
 	//Key 
 	//0 is when Elevator 2 reaches the highest top.
