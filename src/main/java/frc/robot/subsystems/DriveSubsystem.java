@@ -156,6 +156,6 @@ public class DriveSubsystem extends Subsystem {
 	}
 	
 	public void setArcadeSpeed(double x, double y){
-		robotDrive.arcadeDrive(y, x);
+		robotDrive.arcadeDrive(-y, x);
 	}
 }

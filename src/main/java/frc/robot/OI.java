@@ -26,7 +26,7 @@ public class OI {
 	public WPI_TalonSRX right = null;
 	public CANSparkMax elevator1 = null;
 	public CANSparkMax elevator2 = null;
-	public WPI_TalonSRX armwheel = null; 
+	// public WPI_TalonSRX armwheel = null; 
 	public CANSparkMax armopenclose = null;
 	//public WPI_TalonSRX armopenclose = null;
 	// public WPI_TalonSRX armthree = null;

@@ -28,17 +28,21 @@ public class HomingElevatorCommand extends Command {
 		if(Robot.elevator.limitSwitchAtBottomOfElevatorTwo.read()==true){
 			System.out.println("Limit switch at E2 done");
 			Robot.elevator.move2(0);
+			Robot.elevator.encoderOffsetOfElevatorTwo = Robot.elevator.encoderTwo.getPosition();
+			System.out.println("E2 offset: " + Robot.elevator.encoderOffsetOfElevatorTwo);
+
+
 		}
 		if(Robot.elevator.limitSwitchAtBottomOfElevatorOne.read()==true){
 			System.out.println("Limit switch at E1 done");
 			Robot.elevator.move1(0);
+			Robot.elevator.encoderOffsetOfElevatorOne = Robot.elevator.encoderOne.getPosition();
+			System.out.println("E1 offset: " + Robot.elevator.encoderOffsetOfElevatorOne);
+			
+
 		}
 		if (Robot.elevator.limitSwitchAtBottomOfElevatorOne.read() ==true 
 			&& Robot.elevator.limitSwitchAtBottomOfElevatorTwo.read() ==true)  {
-            Robot.elevator.encoderOffsetOfElevatorOne = Robot.elevator.encoderOne.getPosition();
-			Robot.elevator.encoderOffsetOfElevatorTwo = Robot.elevator.encoderTwo.getPosition();
-			System.out.println("E1 offset: " + Robot.elevator.encoderOffsetOfElevatorOne);
-			System.out.println("E2 offset: " + Robot.elevator.encoderOffsetOfElevatorTwo);
 			return true;
 		}
 		return false;

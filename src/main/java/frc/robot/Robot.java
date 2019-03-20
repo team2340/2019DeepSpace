@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -19,7 +20,7 @@ import frc.robot.Commands.HomingElevatorCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.LiftandrampSubsystem;
+import frc.robot.subsystems.LiftAndRampSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -38,9 +39,9 @@ public class Robot extends TimedRobot {
    public static ElevatorSubsystem elevator = null;
    public static DriveSubsystem drive = null;
    public static ArmSubsystem arm = null;
-   public static LiftandrampSubsystem liftandramp = null;
-   public Command homingElevatorCommand = null;
-  //  public Command homingArmCommand = null;
+   public static LiftAndRampSubsystem liftandramp = null;
+  // public Command homingElevatorCommand = null;
+    //public Command homingArmCommand = null;
   
 
   /**
@@ -54,13 +55,13 @@ public class Robot extends TimedRobot {
     
     // SmartDashboard.putData("Auto choices", m_chooser);
 
+    CameraServer.getInstance().startAutomaticCapture();
     drive = DriveSubsystem.getInstance();         
-		liftandramp = LiftandrampSubsystem.getInstance();
-		arm = ArmSubsystem.getInstance();               
+		  liftandramp = LiftAndRampSubsystem.getInstance();
+		// arm = ArmSubsystem.getInstance();               
 		elevator = ElevatorSubsystem.getInstance();
-    homingElevatorCommand = new HomingElevatorCommand();
-    // homingArmCommand = new ArmHomingCommand();
-    // oi.gyro = new ADXRS450_Gyro();
+     //homingElevatorCommand = new HomingElevatorCommand();
+     // homingArmCommand = new ArmHomingCommand();
   }
 
 //   /**
@@ -71,10 +72,8 @@ public class Robot extends TimedRobot {
 // }
 
 public void teleopInit() {
-  homingElevatorCommand.cancel();
-  // homingArmCommand.cancel();
-		// oi.gyro.reset();
-		// SmartDashboard.putNumber("Gyro angle", oi.gyro.getAngle());
+  //homingElevatorCommand.cancel();
+    //homingArmCommand.cancel();
 	}
 
   @Override
@@ -85,8 +84,8 @@ public void teleopInit() {
   public void autonomousInit() {
     // m_autoSelected = m_chooser.getSelected();
     // System.out.println("Auto selected: " + m_autoSelected);
-    homingElevatorCommand.start(); 
-    // homingArmCommand.start();
+     //homingElevatorCommand.start(); 
+    //  homingArmCommand.start();
     // new DrivingCameraCommand().start();
   }
   @Override

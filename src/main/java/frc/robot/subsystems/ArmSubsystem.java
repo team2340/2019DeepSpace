@@ -21,7 +21,7 @@ public class ArmSubsystem extends Subsystem {
 
     private ArmSubsystem() {
         System.out.println("CREATED ARM SUBSYSTEM");
-        createArmwheel();
+        // createArmwheel();
         createArmopenclose();
 	}
    public LimitSwitch limitSwitchForArmOpen = new LimitSwitch(RobotMap.ARM_OPEN_ID);
@@ -37,15 +37,15 @@ public class ArmSubsystem extends Subsystem {
 		return subsystem;
     }
 
-	private void createArmwheel() {
-		try {
-			Robot.oi.armwheel = new WPI_TalonSRX(RobotMap.ARM_WHEEL_TAL_ID);
-			Robot.oi.armwheel.configPeakOutputForward(1,0); 
-			Robot.oi.armwheel.configPeakOutputReverse(-1,0);
-		} catch (Exception ex) {
-			System.out.println("createArmWheel FAILED");
-		}
-    }
+	// private void createArmwheel() {
+	// 	try {
+	// 		Robot.oi.armwheel = new WPI_TalonSRX(RobotMap.ARM_WHEEL_TAL_ID);
+	// 		Robot.oi.armwheel.configPeakOutputForward(1,0); 
+	// 		Robot.oi.armwheel.configPeakOutputReverse(-1,0);
+	// 	} catch (Exception ex) {
+	// 		System.out.println("createArmWheel FAILED");
+	// 	}
+    // }
 
     private void createArmopenclose() {
 		try {
@@ -96,16 +96,19 @@ public class ArmSubsystem extends Subsystem {
         Robot.oi.armopenclose.setIdleMode(IdleMode.kBrake); 
         Robot.oi.armopenclose.set(0);
     }
-    public void armWheelsin(){
-        Robot.oi.armwheel.set(-.5);
-    }
+    // public void armWheelsin(){
+    //     // System.out.println("Wheel in");
+    //     Robot.oi.armwheel.set(-.75);
+    // }
 
-    public void armWheelsout(){
-        Robot.oi.armwheel.set(.5);
-    }
-    public void armWheelStop(){
-        Robot.oi.armwheel.set(0);
-    }
+    // public void armWheelsout(){
+    //     // System.out.println("Wheel out");
+    //     Robot.oi.armwheel.set(.75);
+    // }
+    // public void armWheelStop(){
+    //     // System.out.println("Wheel stop");
+    //     Robot.oi.armwheel.set(0);
+    // }
 
     @Override
     protected void initDefaultCommand() {

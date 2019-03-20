@@ -2,24 +2,27 @@ package frc.robot.LimitSwitches;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimitSwitch  {
 
 	private DigitalInput limitSwitch = null;
-	public Integer pinnumber ;
+	public Integer pinNumber;
     public LimitSwitch(Integer pin) {
-		pinnumber=pin;
-		System.out.print("pin number"+pin);
+		pinNumber=pin;
+		System.out.print("Created limit switch: " + pin);
     	limitSwitch = new DigitalInput(pin);
     }
 
     public boolean read() {
-		System.out.println("limitSwitch "+pinnumber+" "+limitSwitch.get());
+		// System.out.println("limitSwitch "+pinnumber+" "+limitSwitch.get());
 		
     	// while (limitSwitch.get()) {
     	// 	Timer.delay(.01);
 		// }
-		return limitSwitch.get();
+		var switchValue = limitSwitch.get();
+		SmartDashboard.putBoolean("Limit Switch " + pinNumber, switchValue);
+		return switchValue;
 	}
 }	
 

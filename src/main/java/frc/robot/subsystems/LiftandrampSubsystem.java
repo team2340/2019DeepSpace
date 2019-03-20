@@ -3,22 +3,21 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.Commands.LiftandrampCommand;
+import frc.robot.Commands.LiftAndRampCommand;
 
-public class LiftandrampSubsystem extends Subsystem {
-    static private LiftandrampSubsystem subsystem;
+public class LiftAndRampSubsystem extends Subsystem {
+    static private LiftAndRampSubsystem subsystem;
 
-    private LiftandrampSubsystem() {
+    private LiftAndRampSubsystem() {
         createramp();
         createLift();
 	}
 
-    public static LiftandrampSubsystem getInstance() {
+    public static LiftAndRampSubsystem getInstance() {
 		if (subsystem == null) {
-			subsystem = new LiftandrampSubsystem();
+			subsystem = new LiftAndRampSubsystem();
 		}
 		return subsystem;
     }
@@ -26,8 +25,8 @@ public class LiftandrampSubsystem extends Subsystem {
 	private void createLift() {
 		try {
 			Robot.oi.lift = new WPI_TalonSRX(RobotMap.LIFT_TAL_ID);
-			Robot.oi.lift.configPeakOutputForward(1,0); 
-			Robot.oi.lift.configPeakOutputReverse(-1,0);
+			Robot.oi.lift.configPeakOutputForward(1); 
+            Robot.oi.lift.configPeakOutputReverse(-1);
 		} catch (Exception ex) {
 			System.out.println("createlift FAILED");
 		}
@@ -36,8 +35,8 @@ public class LiftandrampSubsystem extends Subsystem {
     private void createramp() {
 		try {
 			Robot.oi.ramp = new WPI_TalonSRX(RobotMap.RAMP_TAL_ID);
-			Robot.oi.ramp.configPeakOutputForward(1,0); 
-			Robot.oi.ramp.configPeakOutputReverse(-1,0);
+			Robot.oi.ramp.configPeakOutputForward(1); 
+			Robot.oi.ramp.configPeakOutputReverse(-1);
 		} catch (Exception ex) {
 			System.out.println("createramp FAILED");
 		}
@@ -50,30 +49,21 @@ public class LiftandrampSubsystem extends Subsystem {
     public void liftdown(){
         Robot.oi.lift.set(-.75);
     }
-public void liftstop(){
-    Robot.oi.lift.set(0);
-}
-    public void rampup(){
-        Robot.oi.ramp.set(1);
+    
+    public void liftstop(){
+        Robot.oi.lift.set(0);
     }
 
-    public void rampdown(){
+    public void rampDown(){
         Robot.oi.ramp.set(-1);
     }
+
     public void rampstop(){
         Robot.oi.ramp.set(0);
     }
 
-    public double getRampAngle(){
-        double angle = 0;//Math.abs(Robot.oi.gyro.getAngle());
-        SmartDashboard.putNumber("Gyro angle", angle);
-		// Robot.myLogger.log("Rotation","angle", angle);
-        return angle;
-    } 
-
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new LiftandrampCommand());
+        setDefaultCommand(new LiftAndRampCommand());
     }
-
 }

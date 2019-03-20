@@ -26,7 +26,7 @@ public class ElevatorSubsystem extends Subsystem {
 	public CANPIDController pidControllerElevatorOne;
 	public CANPIDController pidControllerElevatorTwo;
 	public double maxHeightOfElevator1 = 33;
-	public double maxHeightOfElevator2 = 34;
+	public double maxHeightOfElevator2 = 34.5;
 	public double encoderOffsetOfElevatorOne;
 	public double encoderOffsetOfElevatorTwo;
 	
@@ -45,7 +45,7 @@ public class ElevatorSubsystem extends Subsystem {
 	
 	private void createElevator() {
 		try {
-			Robot.oi.elevator1 = new CANSparkMax(RobotMap.ELEVATOR_TAL_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+			Robot.oi.elevator1 = new CANSparkMax(RobotMap.ELEVATOR_NEO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 			Robot.oi.elevator1.setIdleMode(IdleMode.kBrake); //if motor not moving
 			Robot.oi.elevator1.setSmartCurrentLimit(40);
 			encoderOne = Robot.oi.elevator1.getEncoder();
@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends Subsystem {
 
 	private void createElevator2() {
 		try {
-			Robot.oi.elevator2 = new CANSparkMax(RobotMap.ELEVATOR2_TAL_ID,CANSparkMaxLowLevel.MotorType.kBrushless);
+			Robot.oi.elevator2 = new CANSparkMax(RobotMap.ELEVATOR2_NEO_ID,CANSparkMaxLowLevel.MotorType.kBrushless);
 			Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);
 			Robot.oi.elevator2.setInverted(true);
 			Robot.oi.elevator2.setSmartCurrentLimit(40);
@@ -72,21 +72,21 @@ public class ElevatorSubsystem extends Subsystem {
 
 	public void moveUpOrDown(double num){
 		double range = 0.1;
-		System.out.println("num " + num);
+		// System.out.println("num " + num);
 		if(num>range){//we want to move up
-			System.out.println("num is greater then range" );
+			// System.out.println("num is greater then range" );
 			if(checkMaxOfElevatorTwo() == false){//if elevator one is not all the way at the bottom
-				System.out.println("Elevator two is not all the way up" );
+				// System.out.println("Elevator two is not all the way up" );
 
 				if(checkMaxOfElevatorOne()==true){//if elevator two is all the way at the bottom
-					System.out.println("elevator one is all the way up" );
+					// System.out.println("elevator one is all the way up" );
 
 					Robot.elevator.move1(0);
 					Robot.elevator.move2(num);//move elevator two up
 				}
 				else
 				{ //if elevator One is all the way down
-					System.out.println("elevator one is not all the way up" );
+					// System.out.println("elevator one is not all the way up" );
 
 					Robot.elevator.move1(num);//move elevator two up
 					Robot.elevator.move2(0);
@@ -94,25 +94,25 @@ public class ElevatorSubsystem extends Subsystem {
 			}
 			else
 			{
-				System.out.println("everyone is all the way up" );
+				// System.out.println("everyone is all the way up" );
 
 				Robot.elevator.move1(0);
 				Robot.elevator.move2(0);
 			}
 		}
 		else if(num<-range){ //going down// + is down
-			System.out.println("num is less then range");
+			// System.out.println("num is less then range");
 			if (limitSwitchAtBottomOfElevatorOne.read() == false){
-				System.out.println("elevator one is not all the way down" );
+				// System.out.println("elevator one is not all the way down" );
 
 				if (limitSwitchAtBottomOfElevatorTwo.read() == true) {
-					System.out.println("elevator two is all the way down" );
+					// System.out.println("elevator two is all the way down" );
 
 					Robot.elevator.move1(num);
 					Robot.elevator.move2(0);
 				}
 		 		else{
-					System.out.println("elevator two is not all the way down" );
+					// System.out.println("elevator two is not all the way down" );
 
 					Robot.elevator.move1(0);
 					Robot.elevator.move2(num);
@@ -120,14 +120,14 @@ public class ElevatorSubsystem extends Subsystem {
 			 }
 			else
 			{
-				System.out.println("everyone is all the way down" );
+				// System.out.println("everyone is all the way down" );
 
 				Robot.elevator.move1(0);
 				Robot.elevator.move2(0);
 			}
 		}
 		else{
-			System.out.println("num is set to zero");
+			// System.out.println("num is set to zero");
 			Robot.elevator.move1(0);
 			Robot.elevator.move2(0);
 		}
@@ -161,12 +161,20 @@ public class ElevatorSubsystem extends Subsystem {
 		//desiredHeight is in Inches, while desiredEncoderPosition is in encoder counts, real
 		//desiredEncoderPosition should be used when doing the math below, real, where we want to locate
 		desiredHeight = Math.max(RobotUtils.getHeightOfRobotFromTheGround(), desiredHeight);
+		System.out.println("desiredHeight-move position"+desiredHeight);
 		double elevatorDesiredHeight = desiredHeight-RobotUtils.getHeightOfRobotFromTheGround();
+		System.out.println("elevatordesiredHeight-move position"+elevatorDesiredHeight);
+
 		// double PostionOfElevatorTwo = (desiredHeight-(RobotUtils.getHeightOfRobotFromTheGround() ));	
 		double currentHeight = (currentHeightElevatorOne())+(currentHeightElevatorTwo());
-		 double rangeForCurrentHeight = 1;
-		if((currentHeight<=(rangeForCurrentHeight+currentHeight))
-		   &&(currentHeight >= (rangeForCurrentHeight- currentHeight))){
+		System.out.println("currentHeight"+currentHeight);
+
+		double rangeForCurrentHeight = 1;
+		System.out.print("cuurrentHeight+range"+(rangeForCurrentHeight+elevatorDesiredHeight));
+		if((currentHeight<=(rangeForCurrentHeight+elevatorDesiredHeight))
+		   &&(currentHeight >= (rangeForCurrentHeight- elevatorDesiredHeight))){
+			System.out.println("done moveing");
+
 			Robot.oi.elevator1.setIdleMode(IdleMode.kBrake);
 			Robot.oi.elevator1.stopMotor();
 			Robot.oi.elevator2.setIdleMode(IdleMode.kBrake);

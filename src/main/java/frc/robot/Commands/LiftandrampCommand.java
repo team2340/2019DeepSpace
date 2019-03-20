@@ -5,11 +5,12 @@ import frc.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class LiftandrampCommand extends Command {
+public class LiftAndRampCommand extends Command {
 	private Joystick controller;
 
-	public LiftandrampCommand() {
+	public LiftAndRampCommand() {
 		requires(Robot.liftandramp);
 	}
 
@@ -20,6 +21,8 @@ public class LiftandrampCommand extends Command {
 
 	@Override
 	protected void execute() {
+		SmartDashboard.putBoolean("Lift Limit Switch", Robot.oi.lift.getSensorCollection().isFwdLimitSwitchClosed());
+
         if(controller.getRawButton(RobotMap.BUTTON_6) && ! controller.getRawButton(RobotMap.BUTTON_1))
         {
             Robot.liftandramp.liftup();
@@ -31,22 +34,17 @@ public class LiftandrampCommand extends Command {
 			Robot.liftandramp.liftstop();
 		}
 		
-        if(controller.getRawButton(RobotMap.BUTTON_2) && ! controller.getRawButton(RobotMap.BUTTON_1)){
-            Robot.liftandramp.rampdown();
-        }
-        else if(controller.getRawButton(RobotMap.BUTTON_2) && controller.getRawButton(RobotMap.BUTTON_1)){
-            Robot.liftandramp.rampup();
-		}
-		else{
-			Robot.liftandramp.rampstop();
-		}
+        // if(controller.getRawButton(RobotMap.BUTTON_2) && ! controller.getRawButton(RobotMap.BUTTON_1)){
+        //     Robot.liftandramp.rampdown();
+        // }
+        //  if(controller.getRawButton(RobotMap.BUTTON_2) && controller.getRawButton(RobotMap.BUTTON_1)){
+        //     Robot.liftandramp.rampDown();
+		// }
+		// else{
+		// 	Robot.liftandramp.rampstop();
+		// }
+	}
 
-		if(controller.getRawButton(RobotMap.BUTTON_4)){
-			if(Robot.liftandramp.getRampAngle()> 90){
-				Robot.liftandramp.rampup();
-			}
-		}
-    }
 	@Override
 	protected boolean isFinished() {
 		return false;

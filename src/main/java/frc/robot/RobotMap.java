@@ -31,14 +31,13 @@ public class RobotMap {
 		public static final int ARM_OPEN_ID = 2;
 	/*TALON IDs*/
 		//Wheel Ids
-		public static final int RIGHT_TAL_ID = 6; //Right Side 3//6
-		public static final int LEFT_TAL_ID = 8;  //Left Side 4//4
+		public static final int RIGHT_TAL_ID = 6;
+		public static final int LEFT_TAL_ID = 8;
 		//Acquisition Ids
-		public static final int ELEVATOR_TAL_ID = 50; // Elevator is 5-neo
-
-		public static final int ELEVATOR2_TAL_ID = 55;//-neo
-		public static final int ARM_WHEEL_TAL_ID = 7; //Arm one left side is 6//7
-		public static final int ARM_OPEN_CLOSE_TAL_ID = 11; //Arm two right side is 7- neo
-		public static final int RAMP_TAL_ID = 9; //climbing is 8//8
-		public static final int LIFT_TAL_ID = 3; //expand or retract arms	
+		public static final int ELEVATOR_NEO_ID = 50; // Elevator is 5-neo
+		public static final int ELEVATOR2_NEO_ID = 55;//-neo
+		// public static final int ARM_WHEEL_TAL_ID = 7;
+		public static final int ARM_OPEN_CLOSE_TAL_ID = 11; 
+		public static final int RAMP_TAL_ID = 9; 
+		public static final int LIFT_TAL_ID = 5; //was 3	
 	}

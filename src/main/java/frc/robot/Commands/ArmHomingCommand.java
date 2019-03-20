@@ -13,7 +13,7 @@ public class ArmHomingCommand extends Command {
 
 	@Override
 	protected void execute() {
-		Robot.arm.armMovement(false);
+		Robot.arm.armsOpen();;
 	}
 
 	@Override
